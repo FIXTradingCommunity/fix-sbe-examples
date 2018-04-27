@@ -442,15 +442,16 @@ public class ExampleDumper {
     interpretRow(wireFormat(bytes, offset, FillsGrpDecoder.sbeHeaderSize()), 0, "FillGrp", 0,
         FillsGrpDecoder.sbeHeaderSize(),
         String.format("Block length=%d count=%d", blockLength, count), out);
+    offset += FillsGrpDecoder.sbeHeaderSize();
     while (fillsGrp.hasNext()) {
       fillsGrp = fillsGrp.next();
       OptionalDecimalEncodingDecoder decimalDecoder = fillsGrp.fillPx();
       long priceMantissa = decimalDecoder.mantissa();
       byte priceExponent = decimalDecoder.exponent();
       interpretRow(
-          wireFormat(bytes, offset + NewOrderSingleDecoder.priceEncodingOffset(),
-              NewOrderSingleDecoder.priceEncodingLength()),
-          NewOrderSingleDecoder.priceId(), "FillPx", FillsGrpDecoder.fillPxEncodingOffset(),
+          wireFormat(bytes, offset + FillsGrpDecoder.fillPxEncodingOffset(),
+              FillsGrpDecoder.fillPxEncodingLength()),
+          FillsGrpDecoder.fillPxId(), "FillPx", FillsGrpDecoder.fillPxEncodingOffset(),
           FillsGrpDecoder.fillPxEncodingLength(), decimalToString(priceMantissa, priceExponent),
           out);
       QtyEncodingDecoder fillQtyDecoder = fillsGrp.fillQty();
@@ -462,6 +463,7 @@ public class ExampleDumper {
           FillsGrpDecoder.fillQtyId(), "FillQty",
           FillsGrpDecoder.fillQtyEncodingOffset(),
           FillsGrpDecoder.fillQtyEncodingLength(), decimalToString(fillMantissa, fillExponent), out);
+      offset += FillsGrpDecoder.sbeBlockLength();
     }
 
   }
