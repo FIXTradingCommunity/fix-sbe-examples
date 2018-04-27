@@ -356,7 +356,7 @@ public class ExampleDumper {
     byte[] text = new byte[128];
     int textLength = bmrDecoder.getText(text, 0, text.length);
     interpretRow(wireFormat(bytes, offset + 2, 6)+"...", BusinessMessageRejectDecoder.textId(),
-        "BusinesRejectRefId", 0, textLength, new String(text, 0, textLength), out);
+        "Text", 0, textLength, new String(text, 0, textLength), out);
   }
 
   public void interpretExecutionReport(byte[] bytes, int size, PrintStream out) {

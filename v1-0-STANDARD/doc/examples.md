@@ -2,7 +2,7 @@
 ```
 00 00 00 44 eb 50 36 00 63 00 5b 00 00 00 4f 52 :   D P6 c [   OR
 44 30 30 30 30 31 41 43 43 54 30 31 00 00 47 45 :D00001ACCT01  GE
-4d 34 00 00 00 00 31 c0 cb 1d 41 95 64 29 15 07 :M4    1   A d)  
+4d 34 00 00 00 00 31 80 16 b3 3b 13 65 29 15 07 :M4    1   ; e)  
 00 00 00 32 1a 85 01 00 00 00 00 00 00 00 00 00 :   2            
 00 00 00 80                                     :    
 ```
@@ -19,7 +19,7 @@
 | `4143435430310000` | 1 | Account | 8 | 8 | ACCT01 |
 | `47454d3400000000` | 55 | Symbol | 16 | 8 | GEM4 |
 | `31` | 54 | Side | 24 | 1 | Buy |
-| `c0cb1d4195642915` | 60 | TransactTime | 25 | 8 | 2018-04-27T20:22:21.047Z |
+| `8016b33b13652915` | 60 | TransactTime | 25 | 8 | 2018-04-27T20:31:22.122Z |
 | `07000000` | 38 | OrderQty | 33 | 4 | 7 |
 | `32` | 40 | OrdType | 37 | 1 | Limit |
 | `1a85010000000000` | 44 | Price | 38 | 8 | 99.610 |
@@ -74,4 +74,4 @@
 | `0000` |   | SBE schema version | 6 | 2 | 0 |
 | `4f52443030303031` | 379 | BusinesRejectRefId | 0 | 8 | ORD00001 |
 | `06` | 380 | BusinessRejectReason | 8 | 1 | NotAuthorized |
-| `4e6f74206175...` | 58 | BusinesRejectRefId | 0 | 39 | Not authorized to trade that instrument |
+| `4e6f74206175...` | 58 | Text | 0 | 39 | Not authorized to trade that instrument |
