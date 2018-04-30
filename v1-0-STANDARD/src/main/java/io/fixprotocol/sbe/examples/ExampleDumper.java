@@ -371,20 +371,20 @@ public class ExampleDumper {
     erDecoder.wrap(buffer, offset, mhDecoder.blockLength(), mhDecoder.version());
     String orderId = erDecoder.orderID();
     interpretRow(
-        wireFormat(bytes, offset + ExecutionReportDecoder.orderIDEncodingLength(),
+        wireFormat(bytes, offset + ExecutionReportDecoder.orderIDEncodingOffset(),
             ExecutionReportDecoder.orderIDEncodingLength()),
         ExecutionReportDecoder.orderIDId(), "OrderID",
         ExecutionReportDecoder.orderIDEncodingLength(),
         ExecutionReportDecoder.orderIDEncodingLength(), orderId, out);
     String execId = erDecoder.execID();
     interpretRow(
-        wireFormat(bytes, offset + ExecutionReportDecoder.execIDEncodingLength(),
+        wireFormat(bytes, offset + ExecutionReportDecoder.execIDEncodingOffset(),
             ExecutionReportDecoder.execIDEncodingLength()),
         ExecutionReportDecoder.execIDId(), "ExecID", ExecutionReportDecoder.execIDEncodingLength(),
         ExecutionReportDecoder.execIDEncodingLength(), execId, out);
     OrdStatusEnum ordStatus = erDecoder.ordStatus();
     interpretRow(
-        wireFormat(bytes, offset + ExecutionReportDecoder.ordStatusEncodingLength(),
+        wireFormat(bytes, offset + ExecutionReportDecoder.ordStatusEncodingOffset(),
             ExecutionReportDecoder.ordStatusEncodingLength()),
         ExecutionReportDecoder.ordStatusId(), "OrdStatus",
         ExecutionReportDecoder.ordStatusEncodingLength(),
@@ -405,7 +405,7 @@ public class ExampleDumper {
         monthYearToString(monthYearDecoder), out);
     SideEnum side = erDecoder.side();
     interpretRow(
-        wireFormat(bytes, offset + ExecutionReportDecoder.sideEncodingLength(),
+        wireFormat(bytes, offset + ExecutionReportDecoder.sideEncodingOffset(),
             ExecutionReportDecoder.sideEncodingLength()),
         ExecutionReportDecoder.sideId(), "Side", ExecutionReportDecoder.sideEncodingLength(),
         ExecutionReportDecoder.sideEncodingLength(), side.name(), out);
