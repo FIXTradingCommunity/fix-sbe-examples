@@ -19,9 +19,10 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 /**
- * Prints the contents of a buffer in hex and ASCII
+ * Prints the contents of a buffer in hex and text
  * 
  * @author Don Mendelson
  * 
@@ -29,7 +30,7 @@ import java.nio.ByteBuffer;
 public final class BufferDumper {
 
   /**
-   * Print a byte array as hex and ASCII
+   * Print a byte array as hex and text
    * 
    * @param bytes data to print
    * @param index index from start of data buffer to print
@@ -39,7 +40,7 @@ public final class BufferDumper {
    * @throws UnsupportedEncodingException if character set conversion fails
    * @throws IndexOutOfBoundsException if messageSize > bytes.length
    */
-  public static void print(byte[] bytes, int index, int width, long messageSize, PrintStream out)
+  public static void print(byte[] bytes, int index, int width, long messageSize, PrintStream out, Charset charset)
       throws UnsupportedEncodingException {
     if (messageSize > bytes.length) {
       throw new IndexOutOfBoundsException();
@@ -52,12 +53,12 @@ public final class BufferDumper {
       for (int j = hexLine.length(); j < width * 3; j++) {
         out.print(' ');
       }
-      out.println(printAsciiLine(bytes, index + i, lineWidth));
+      out.println(printTextLine(bytes, index + i, lineWidth, charset));
     }
   }
 
   /**
-   * Print a byte array as hex and ASCII
+   * Print a byte array as hex and text
    * 
    * @param bytes data to print
    * @param width width of output as number of bytes of file to print per line
@@ -65,20 +66,20 @@ public final class BufferDumper {
    * @param out output stream
    * @throws UnsupportedEncodingException if character set conversion fails
    */
-  public static void print(byte[] bytes, int width, long messageSize, PrintStream out)
+  public static void print(byte[] bytes, int width, long messageSize, PrintStream out, Charset charset)
       throws UnsupportedEncodingException {
-    print(bytes, 0, width, messageSize, out);
+    print(bytes, 0, width, messageSize, out, charset);
   }
 
   /**
-   * Print a byte array as hex and ASCII
+   * Print a byte array as hex and text
    * 
    * @param buffer buffer to print
    * @param width width of output as number of bytes of file to print per line
    * @param out output stream
    * @throws UnsupportedEncodingException if character set conversion fails
    */
-  public static void print(ByteBuffer buffer, int width, PrintStream out)
+  public static void print(ByteBuffer buffer, int width, PrintStream out, Charset charset)
       throws UnsupportedEncodingException {
     ByteBuffer buffer2 = buffer.duplicate();
     buffer2.order(buffer.order());
@@ -87,15 +88,15 @@ public final class BufferDumper {
     }
     byte[] bytes = new byte[buffer2.remaining()];
     buffer2.get(bytes);
-    print(bytes, 0, width, bytes.length, out);
+    print(bytes, 0, width, bytes.length, out, charset);
   }
 
-  private static String printAsciiLine(byte[] bytes, int index, int width)
+  private static String printTextLine(byte[] bytes, int index, int width, Charset charset)
       throws UnsupportedEncodingException {
     StringWriter writer = new StringWriter();
     if (index < bytes.length) {
       writer.append(":");
-      writer.append(new String(bytes, index, Math.min(width, bytes.length - index), "US-ASCII")
+      writer.append(new String(bytes, index, Math.min(width, bytes.length - index), charset)
           .replaceAll("[^\\x20-\\x7E]", " "));
     }
     return writer.toString();

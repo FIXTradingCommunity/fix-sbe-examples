@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fixprotocol.sbe</groupId>
 	<artifactId>examples</artifactId>
-	<version>2.0.0-RC1-SNAPSHOT</version>
+	<version>2.0.0-RC2-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Example and documentation generation for Simple Binary Encoding 
 	</description>
@@ -53,7 +53,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<real-logic.version>1.8.3</real-logic.version>
+		<real-logic.version>1.12.3</real-logic.version>
 	</properties>
 
 	<dependencies>

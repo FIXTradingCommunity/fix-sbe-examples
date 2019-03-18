@@ -115,7 +115,7 @@ public class ExampleDumper {
   private final MessageHeaderDecoder mhDecoder = new MessageHeaderDecoder();
   private final GroupSizeEncodingDecoder ghDecoder = new GroupSizeEncodingDecoder();
   
-  static final Charset ASCII = StandardCharsets.US_ASCII;
+  static final Charset DEFAULT_ENCODING = StandardCharsets.ISO_8859_1;
 
   /**
    * Output all examples
@@ -157,7 +157,7 @@ public class ExampleDumper {
 
   public void dump(byte[] bytes, int offset, PrintStream out) throws UnsupportedEncodingException {
     out.print(blockBegin);
-    BufferDumper.print(bytes, 16, offset, out);
+    BufferDumper.print(bytes, 16, offset, out, DEFAULT_ENCODING);
     out.print(blockEnd);
   }
 
@@ -200,9 +200,9 @@ public class ExampleDumper {
     offset += mhEncoder.encodedLength();
 
     bmrEncoder.wrap(buffer, offset);
-    bmrEncoder.putBusinesRejectRefId(toBytes("ORD00001", ASCII), 0);
+    bmrEncoder.putBusinesRejectRefId(toBytes("ORD00001", DEFAULT_ENCODING), 0);
     bmrEncoder.businessRejectReason(BusinessRejectReasonEnum.NotAuthorized);
-    byte[] text = toBytes("Not authorized to trade that instrument", ASCII);
+    byte[] text = toBytes("Not authorized to trade that instrument", DEFAULT_ENCODING);
     bmrEncoder.putText(text, 0, text.length);
     offset += bmrEncoder.encodedLength();
 
@@ -229,11 +229,11 @@ public class ExampleDumper {
     offset += mhEncoder.encodedLength();
 
     erEncoder.wrap(buffer, offset);
-    erEncoder.putOrderID(toBytes("O0000001", ASCII), 0);
-    erEncoder.putExecID(toBytes("EXEC0000", ASCII), 0);
+    erEncoder.putOrderID(toBytes("O0000001", DEFAULT_ENCODING), 0);
+    erEncoder.putExecID(toBytes("EXEC0000", DEFAULT_ENCODING), 0);
     erEncoder.execType(ExecTypeEnum.Trade);
     erEncoder.ordStatus(OrdStatusEnum.PartialFilled);
-    erEncoder.putSymbol(toBytes("GEM4\u0000\u0000\u0000\u0000", ASCII), 0);
+    erEncoder.putSymbol(toBytes("GEM4\u0000\u0000\u0000\u0000", DEFAULT_ENCODING), 0);
     MONTH_YEAREncoder matEncoder = erEncoder.maturityMonthYear();
     matEncoder.year(2014);
     matEncoder.month((short) 6);
@@ -282,9 +282,9 @@ public class ExampleDumper {
     offset += mhEncoder.encodedLength();
 
     nosEncoder.wrap(buffer, offset);
-    nosEncoder.putClOrdId(toBytes("ORD00001", ASCII), 0);
-    nosEncoder.putAccount(toBytes("ACCT01\u0000\u0000", ASCII), 0);
-    nosEncoder.putSymbol(toBytes("GEM4\u0000\u0000\u0000\u0000", ASCII), 0);
+    nosEncoder.putClOrdId(toBytes("ORD00001", DEFAULT_ENCODING), 0);
+    nosEncoder.putAccount(toBytes("ACCT01\u0000\u0000", DEFAULT_ENCODING), 0);
+    nosEncoder.putSymbol(toBytes("GEM4\u0000\u0000\u0000\u0000", DEFAULT_ENCODING), 0);
     nosEncoder.side(SideEnum.Buy);
     nosEncoder.transactTime().time(TimeUnit.MILLISECONDS.toNanos(Instant.now().toEpochMilli()));
     QtyEncodingEncoder qtyEncoder = nosEncoder.orderQty();
