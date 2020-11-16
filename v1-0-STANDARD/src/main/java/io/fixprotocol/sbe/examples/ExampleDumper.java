@@ -22,6 +22,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -279,7 +281,9 @@ public class ExampleDumper {
     nosEncoder.putAccount("ACCT01\u0000\u0000".getBytes(), 0);
     nosEncoder.putSymbol("GEM4\u0000\u0000\u0000\u0000".getBytes(), 0);
     nosEncoder.side(SideEnum.Buy);
-    nosEncoder.transactTime(TimeUnit.MILLISECONDS.toNanos(Instant.now().toEpochMilli()));
+    // freeze to value in spec 2018-04-30T14:32:01.248Z
+    LocalDateTime transactDateTime = LocalDateTime.of(2018, 4, 30, 14, 32, 1, (int)TimeUnit.MILLISECONDS.toNanos(248));
+    nosEncoder.transactTime(TimeUnit.MILLISECONDS.toNanos(transactDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()));
     QtyEncodingEncoder qtyEncoder = nosEncoder.orderQty();
     qtyEncoder.mantissa(7);
     nosEncoder.ordType(OrdTypeEnum.Limit);

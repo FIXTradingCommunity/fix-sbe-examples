@@ -79,7 +79,7 @@ xsi:schemaLocation="http://fixprotocol.io/2016/sbe sbe.xsd">
 	<sbe:message name="BusinessMessageReject" id="97" blockLength="9" semanticType="j">
 		<field name="BusinesRejectRefId" id="379" type="idString" offset="0" semanticType="String"/>
 		<field name="BusinessRejectReason" id="380" type="businessRejectReasonEnum" offset="8" semanticType="int"/>
-		<data name="Text" id="58" type="DATA" semanticType="data"/>
+		<data name="Text" id="58" type="DATA" semanticType="String"/>
 	</sbe:message>
 	<sbe:message name="ExecutionReport" id="98" blockLength="42" semanticType="8">
 		<field name="OrderID" id="37" type="idString" offset="0" semanticType="String"/>
