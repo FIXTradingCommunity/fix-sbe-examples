@@ -75,3 +75,11 @@
 | `4f52443030303031` | 379 | BusinesRejectRefId | 0 | 8 | ORD00001 |
 | `06` | 380 | BusinessRejectReason | 8 | 1 | NotAuthorized |
 | `4e6f74206175...` | 58 | Text | 0 | 39 | Not authorized to trade that instrument |
+### Wire format of field encodings
+```
+00 50 d4 89 fe a2 24 13 09 fa 00                : P   $    
+```
+### Interpretation of field encodings
+|Wire format|Field ID|Name|Offset|Length|Interpreted value|
+|-----------|-------:|----|-----:|-----:|-----------------|
+| `0050d489fea2241309fa00` | 60 | TZTimestamp | 0 | 11 | 2013-09-17T02:30 |

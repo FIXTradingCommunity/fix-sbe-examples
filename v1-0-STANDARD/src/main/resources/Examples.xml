@@ -37,6 +37,13 @@ xsi:schemaLocation="http://fixprotocol.io/2016/sbe sbe.xsd">
 			<type name="mantissa" primitiveType="int32"/>
 			<type name="exponent" presence="constant" primitiveType="int8">0</type>
 		</composite>
+		<composite name="tzTimestamp" semanticType="TZTimestamp">
+		    <type name="time" primitiveType="uint64" />
+		    <type name="unit" primitiveType="uint8" />
+		    <!-- Sign of timezone offset is on hour subfield -->
+		    <type name="timezoneHour" primitiveType="int8" minValue="-12" maxValue="14" />
+		    <type name="timezoneMinute" primitiveType="uint8" maxValue="59" />
+		</composite>
 		<enum name="businessRejectReasonEnum" encodingType="intEnumEncoding">
 			<validValue name="Other">0</validValue>
 			<validValue name="UnknownID">1</validValue>
@@ -107,5 +114,8 @@ xsi:schemaLocation="http://fixprotocol.io/2016/sbe sbe.xsd">
 		<field name="OrdType" id="40" type="ordTypeEnum" offset="37" semanticType="char"/>
 		<field name="Price" id="44" type="optionalDecimalEncoding" offset="38" semanticType="Price"/>
 		<field name="StopPx" id="99" type="optionalDecimalEncoding" offset="46" semanticType="Price"/>
+	</sbe:message>
+	<sbe:message name="FieldEncodings" id="999">
+		<field name="TzTimestamp" id="999" type="tzTimestamp"/>
 	</sbe:message>
 </sbe:messageSchema>

@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +53,8 @@ import io.fixprotocol.sbe.examples.messages.OrdTypeEnum;
 import io.fixprotocol.sbe.examples.messages.QtyEncodingDecoder;
 import io.fixprotocol.sbe.examples.messages.QtyEncodingEncoder;
 import io.fixprotocol.sbe.examples.messages.SideEnum;
+import io.fixprotocol.sbe.examples.messages.TzTimestampDecoder;
+import io.fixprotocol.sbe.examples.messages.TzTimestampEncoder;
 import io.fixprotocol.sbe.util.BufferDumper;
 
 
@@ -111,9 +114,6 @@ public class ExampleDumper {
    */
   public static final String MARKDOWN_TABLE_ROW_END = "|";
   
-  private final MessageHeaderDecoder mhDecoder = new MessageHeaderDecoder();
-
-
   /**
    * Output all examples
    * 
@@ -132,6 +132,7 @@ public class ExampleDumper {
     dumper.dumpAll(stream);
   }
 
+
   private static String wireFormat(byte[] bytes, int offset, int width) {
     StringWriter writer = new StringWriter();
     for (int index = 0; index < width; index++) {
@@ -143,11 +144,13 @@ public class ExampleDumper {
   }
 
   private String blockBegin = MARKDOWN_BLOCK_BEGIN;
+
   private String blockEnd = MARKDOWN_BLOCK_END;
   private String headingBegin = MARKDOWN_HEADING_BEGIN;
   private String headingEnd = MARKDOWN_HEADING_END;
   private String literalBegin = MARKDOWN_LITERAL_BEGIN;
   private String literalEnd = MARKDOWN_LITERAL_END;
+  private final MessageHeaderDecoder mhDecoder = new MessageHeaderDecoder();
   private String tableColumnDelim = MARKDOWN_TABLE_COLUMN_DELIM;
   private String tableRowBegin = MARKDOWN_TABLE_ROW_BEGIN;
   private String tableRowEnd = MARKDOWN_TABLE_ROW_END;
@@ -177,6 +180,13 @@ public class ExampleDumper {
     dump(bytes, size, out);
     heading("Interpretation", out);
     interpretBusinessMessageReject(bytes, size, out);
+    
+    Arrays.fill(bytes, (byte) 0);
+    size = encodeFieldEncodings(bytes);
+    heading("Wire format of field encodings", out);
+    dump(bytes, size, out);
+    heading("Interpretation of field encodings", out);
+    interpretFieldEncodings(bytes, size, out);
   }
 
   public int encodeBusinessMessageReject(byte bytes[]) throws UnsupportedEncodingException {
@@ -255,6 +265,24 @@ public class ExampleDumper {
     offset += erEncoder.encodedLength();
 
     sofhEncoder.messageLength(offset);
+    return offset;
+  }
+
+  public int encodeFieldEncodings(byte[] bytes) {
+    TzTimestampEncoder tzEncoder = new TzTimestampEncoder();
+    MutableDirectBuffer buffer = new UnsafeBuffer(bytes);
+    int offset = 0;
+    tzEncoder.wrap(buffer, offset);
+    LocalDateTime dateTime = LocalDateTime.of(2013, 9, 17, 8, 30);
+    long time = TimeUnit.SECONDS.toNanos(dateTime.toEpochSecond(ZoneOffset.UTC));   
+    tzEncoder.time(time);
+    short unit = 9; // nanoseconds
+    tzEncoder.unit(unit);
+    byte timezoneHour = -6;
+    tzEncoder.timezoneHour(timezoneHour);
+    short timezoneMinute = 0;
+    tzEncoder.timezoneMinute(timezoneMinute);
+    offset += tzEncoder.encodedLength();
     return offset;
   }
 
@@ -472,6 +500,26 @@ public class ExampleDumper {
 
   }
 
+  public void interpretFieldEncodings(byte[] bytes, int size, PrintStream out) {
+    DirectBuffer buffer = new UnsafeBuffer(bytes);
+    interpretTableHeader(out);
+    int offset = 0;
+    TzTimestampDecoder tzDecoder = new TzTimestampDecoder();
+    tzDecoder.wrap(buffer, offset);
+    long time = tzDecoder.time();
+    byte hours = tzDecoder.timezoneHour();
+    short minutes = tzDecoder.timezoneMinute();
+    long epochSeconds = TimeUnit.NANOSECONDS.toSeconds(time);
+    int nanoOfSecond = (int) (time % 1000000000L);
+    LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(epochSeconds, nanoOfSecond , ZoneOffset.ofHoursMinutes(hours, minutes));
+    interpretRow(
+        wireFormat(bytes, offset,
+            tzDecoder.encodedLength()),
+        NewOrderSingleDecoder.transactTimeId(), "TZTimestamp",
+        offset,
+        tzDecoder.encodedLength(), localDateTime.toString(), out);
+  }
+
   public void interpretOrderMsg(byte[] bytes, int size, PrintStream out) {
     DirectBuffer buffer = new UnsafeBuffer(bytes);
     interpretTableHeader(out);
@@ -598,6 +646,10 @@ public class ExampleDumper {
     }
   }
 
+  private void heading(String text, PrintStream out) {
+    out.format("%s%s%s\n", headingBegin, text, headingEnd);
+  }
+
   private int interpretFramingHeader(byte[] bytes, PrintStream out, DirectBuffer buffer, int offset) {
     SofhFrameDecoder sofhDecoder = new SofhFrameDecoder();
     sofhDecoder.wrap(buffer, offset);
@@ -648,10 +700,6 @@ public class ExampleDumper {
         MessageHeaderDecoder.versionEncodingLength(), String.format("%d", version), out);
 
     return mhDecoder.offset() + mhDecoder.encodedLength();
-  }
-
-  private void heading(String text, PrintStream out) {
-    out.format("%s%s%s\n", headingBegin, text, headingEnd);
   }
 
   private void interpretRow(String wireFormat, int fieldId, String name, int offset, int length,
